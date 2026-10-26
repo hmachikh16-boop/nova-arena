@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="8" y1="4" x2="56" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2e1a61"/>
+      <stop offset="1" stop-color="#0a061d"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="22" y1="12" x2="43" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff6b0"/>
+      <stop offset=".56" stop-color="#ffd444"/>
+      <stop offset="1" stop-color="#ff9f1c"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="18" y1="45" x2="48" y2="23" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#42e7ff" stop-opacity=".2"/>
+      <stop offset="1" stop-color="#42e7ff"/>
+    </linearGradient>
+  </defs>
+  <path d="M32 3 56 12v19c0 14.4-9.8 25-24 30C17.8 56 8 45.4 8 31V12L32 3Z" fill="url(#bg)" stroke="#ffd444" stroke-width="2.5"/>
+  <path d="M32 9 50 16v15c0 11-6.8 19.1-18 23.6C20.8 50.1 14 42 14 31V16l18-7Z" fill="none" stroke="#8c68d9" stroke-opacity=".55" stroke-width="1.2"/>
+  <path d="M20 44V20.5L32 36l12-15.5V44" fill="none" stroke="url(#gold)" stroke-width="6.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M20 20.5 32 36l12-15.5" fill="none" stroke="url(#cyan)" stroke-width="1.4" stroke-linecap="round" opacity=".85"/>
+  <path d="m32 2 3 5 5.5.8-4 4 1 5.5-5.5-2.8-5.5 2.8 1-5.5-4-4L29 7l3-5Z" fill="#fff2a0" opacity=".9" transform="translate(0 -1) scale(.32) translate(70 10)"/>
+</svg>

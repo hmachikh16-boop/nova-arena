@@ -1,0 +1,81 @@
+plugins {
+    id 'com.android.application'
+}
+
+def signingPropsFile = rootProject.file('nova-signing.properties')
+def signingProps = new Properties()
+if (signingPropsFile.exists()) {
+    signingPropsFile.withInputStream { signingProps.load(it) }
+}
+
+def arenaAssets = layout.buildDirectory.dir('generated/novaAssets').get().asFile
+
+tasks.register('syncArenaAssets', Copy) {
+    from rootProject.file('../web')
+    into new File(arenaAssets, 'arena')
+    exclude '**/*.bak'
+    exclude '**/__portraits.html'
+    exclude '**/nova-arena.apk'
+    exclude '**/*-qr.png'
+}
+
+android {
+    namespace 'com.novaarena.game'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'com.novaarena.game'
+        minSdk 24
+        targetSdk 36
+        versionCode 1
+        versionName '1.0.0'
+        resourceConfigurations += ['ar', 'en']
+    }
+
+    signingConfigs {
+        release {
+            if (signingPropsFile.exists()) {
+                storeFile rootProject.file(signingProps['storeFile'])
+                storePassword signingProps['storePassword']
+                keyAlias signingProps['keyAlias']
+                keyPassword signingProps['keyPassword']
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-debug'
+        }
+    }
+
+    sourceSets {
+        main {
+            assets.srcDirs = [arenaAssets]
+            java.srcDirs = ['src/main/java']
+            res.srcDirs = ['src/main/res']
+        }
+    }
+
+    packaging {
+        resources {
+            excludes += ['META-INF/LICENSE*', 'META-INF/NOTICE*']
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+tasks.named('preBuild').configure {
+    dependsOn 'syncArenaAssets'
+}

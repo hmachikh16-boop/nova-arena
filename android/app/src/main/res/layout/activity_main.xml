@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/nova_navy"
+    android:keepScreenOn="true">
+
+    <WebView
+        android:id="@+id/gameView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/nova_navy"
+        android:importantForAutofill="no" />
+
+    <LinearLayout
+        android:id="@+id/splashLayer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/nova_splash_bg"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp">
+
+        <ImageView
+            android:layout_width="118dp"
+            android:layout_height="118dp"
+            android:contentDescription="@string/app_name"
+            android:scaleType="centerInside"
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.14"
+            android:text="@string/app_name"
+            android:textColor="@color/nova_gold"
+            android:textSize="30sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.34"
+            android:text="@string/splash_tagline"
+            android:textColor="#9FB7C9"
+            android:textSize="11sp" />
+
+        <ProgressBar
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_marginTop="26dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/nova_gold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/splash_loading"
+            android:textColor="#C7D9E6"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+</FrameLayout>

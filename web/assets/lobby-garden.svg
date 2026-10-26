@@ -1,0 +1,251 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" role="img" aria-label="حدائق نوفا">
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4b0757"/>
+      <stop offset=".38" stop-color="#a7137c"/>
+      <stop offset=".72" stop-color="#d21f8d"/>
+      <stop offset="1" stop-color="#7d0a62"/>
+    </linearGradient>
+    <radialGradient id="centerGlow" cx="50%" cy="38%" r="58%">
+      <stop offset="0" stop-color="#ffc6ea" stop-opacity=".55"/>
+      <stop offset=".45" stop-color="#ff66bd" stop-opacity=".2"/>
+      <stop offset="1" stop-color="#ff66bd" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="archInner" cx="50%" cy="38%" r="68%">
+      <stop offset="0" stop-color="#fff8df"/>
+      <stop offset=".32" stop-color="#ffd9f0"/>
+      <stop offset=".68" stop-color="#ef47ae"/>
+      <stop offset="1" stop-color="#7c0b63"/>
+    </radialGradient>
+    <linearGradient id="archRim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff2a6"/>
+      <stop offset=".28" stop-color="#ffd44d"/>
+      <stop offset=".62" stop-color="#ff9b1f"/>
+      <stop offset="1" stop-color="#b95400"/>
+    </linearGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b4c43"/>
+      <stop offset=".45" stop-color="#0a6655"/>
+      <stop offset="1" stop-color="#03302f"/>
+    </linearGradient>
+    <radialGradient id="floorGlow" cx="50%" cy="38%" r="64%">
+      <stop offset="0" stop-color="#8dffd3" stop-opacity=".34"/>
+      <stop offset=".45" stop-color="#29d6a0" stop-opacity=".12"/>
+      <stop offset="1" stop-color="#29d6a0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="stageGlow" cx="50%" cy="50%" r="52%">
+      <stop offset="0" stop-color="#c9ffe8" stop-opacity=".48"/>
+      <stop offset=".55" stop-color="#41e8ad" stop-opacity=".16"/>
+      <stop offset="1" stop-color="#41e8ad" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff6b1"/>
+      <stop offset=".3" stop-color="#ffda58"/>
+      <stop offset=".68" stop-color="#ffae23"/>
+      <stop offset="1" stop-color="#c86a00"/>
+    </linearGradient>
+    <linearGradient id="goldSide" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffed8b"/>
+      <stop offset=".5" stop-color="#ffb52b"/>
+      <stop offset="1" stop-color="#b95b00"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8bff89"/>
+      <stop offset=".45" stop-color="#39cf70"/>
+      <stop offset="1" stop-color="#0b7b4c"/>
+    </linearGradient>
+    <linearGradient id="leafDark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#42ca68"/>
+      <stop offset="1" stop-color="#07553c"/>
+    </linearGradient>
+    <linearGradient id="pot" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffcf5a"/>
+      <stop offset=".45" stop-color="#e58b17"/>
+      <stop offset="1" stop-color="#733d00"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff8cf" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#fff8cf" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="bottomShade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#021717" stop-opacity="0"/>
+      <stop offset=".72" stop-color="#021717" stop-opacity=".4"/>
+      <stop offset="1" stop-color="#010d10" stop-opacity=".8"/>
+    </linearGradient>
+    <radialGradient id="lampGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#fff4b0" stop-opacity=".95"/>
+      <stop offset=".35" stop-color="#ffcf5e" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#ff9a2b" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="22"/>
+    </filter>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="wallTiles" width="150" height="130" patternUnits="userSpaceOnUse">
+      <path d="M0 0H150V130H0Z" fill="none" stroke="#ff9fdc" stroke-opacity=".12" stroke-width="2"/>
+      <path d="M22 22H128V108H22Z" rx="18" fill="none" stroke="#8e0e6b" stroke-opacity=".26" stroke-width="2"/>
+      <path d="M75 46l9 23 23 9-23 9-9 23-9-23-23-9 23-9z" fill="#ffc0e6" fill-opacity=".08"/>
+    </pattern>
+  </defs>
+
+  <rect width="1600" height="900" fill="#3a064a"/>
+  <rect width="1600" height="680" fill="url(#wall)"/>
+  <rect width="1600" height="680" fill="url(#wallTiles)" opacity=".8"/>
+  <ellipse cx="800" cy="370" rx="700" ry="470" fill="url(#centerGlow)"/>
+
+  <!-- decorative wall panels -->
+  <g opacity=".55">
+    <path d="M80 150h260q26 0 26 26v250q0 26-26 26H80q-26 0-26-26V176q0-26 26-26Z" fill="#a51179" stroke="#ff9bdc" stroke-opacity=".28" stroke-width="3"/>
+    <path d="M1260 150h260q26 0 26 26v250q0 26-26 26h-260q-26 0-26-26V176q0-26 26-26Z" fill="#a51179" stroke="#ff9bdc" stroke-opacity=".28" stroke-width="3"/>
+    <path d="M150 194h120v188H150Z" fill="#7d0a61" stroke="#ffb7e5" stroke-opacity=".16" stroke-width="2"/>
+    <path d="M1330 194h120v188h-120Z" fill="#7d0a61" stroke="#ffb7e5" stroke-opacity=".16" stroke-width="2"/>
+    <circle cx="210" cy="288" r="46" fill="none" stroke="#ffcf78" stroke-opacity=".2" stroke-width="3"/>
+    <path d="M210 252l12 26 26 12-26 12-12 26-12-26-26-12 26-12z" fill="#ffc96f" fill-opacity=".14"/>
+    <circle cx="1390" cy="288" r="46" fill="none" stroke="#ffcf78" stroke-opacity=".2" stroke-width="3"/>
+    <path d="M1390 252l12 26 26 12-26 12-12 26-12-26-26-12 26-12z" fill="#ffc96f" fill-opacity=".14"/>
+  </g>
+
+  <!-- light beams -->
+  <path d="M610 120 720 680H470Z" fill="url(#beam)" opacity=".6"/>
+  <path d="M990 120 1130 680H880Z" fill="url(#beam)" opacity=".45"/>
+
+  <!-- central arch -->
+  <path d="M500 672V322c0-174 120-268 300-268s300 94 300 268v350Z" fill="#47094e" stroke="url(#gold)" stroke-width="16"/>
+  <path d="M553 672V328c0-144 96-220 247-220s247 76 247 220v344Z" fill="url(#archInner)" stroke="#7c0b63" stroke-width="5"/>
+  <path d="M590 672V338c0-116 76-180 210-180s210 64 210 180v334Z" fill="none" stroke="#fff4c9" stroke-opacity=".28" stroke-width="3"/>
+  <path d="M734 120h132v42H734Z" fill="url(#gold)" opacity=".8"/>
+  <path d="M800 56l34 58-34 58-34-58z" fill="url(#gold)" stroke="#fff2a6" stroke-width="3" filter="url(#glow)"/>
+  <path d="M800 82l17 32-17 32-17-32z" fill="#ff5db8"/>
+  <circle cx="800" cy="102" r="5" fill="#fff8dc"/>
+
+  <!-- arch pillars -->
+  <g>
+    <rect x="470" y="430" width="52" height="250" rx="12" fill="url(#goldSide)" stroke="#6f3400" stroke-width="4"/>
+    <rect x="1078" y="430" width="52" height="250" rx="12" fill="url(#goldSide)" stroke="#6f3400" stroke-width="4"/>
+    <rect x="458" y="644" width="76" height="42" rx="10" fill="url(#gold)" stroke="#6f3400" stroke-width="4"/>
+    <rect x="1066" y="644" width="76" height="42" rx="10" fill="url(#gold)" stroke="#6f3400" stroke-width="4"/>
+    <circle cx="496" cy="410" r="26" fill="url(#gold)" stroke="#6f3400" stroke-width="4"/>
+    <circle cx="1104" cy="410" r="26" fill="url(#gold)" stroke="#6f3400" stroke-width="4"/>
+    <path d="M496 388l8 16 16 8-16 8-8 16-8-16-16-8 16-8z" fill="#fff5c4"/>
+    <path d="M1104 388l8 16 16 8-16 8-8 16-8-16-16-8 16-8z" fill="#fff5c4"/>
+  </g>
+
+  <!-- hanging vines -->
+  <g fill="none" stroke="url(#leaf)" stroke-width="8" stroke-linecap="round">
+    <path d="M28 0c18 90 12 154-8 226"/>
+    <path d="M122 0c-10 74 4 130 34 188"/>
+    <path d="M1572 0c-18 90-12 154 8 226"/>
+    <path d="M1478 0c10 74-4 130-34 188"/>
+  </g>
+  <g fill="url(#leafDark)">
+    <path d="M22 70c-30 8-44 30-46 58 28 2 48-14 58-36 4-9 0-19-12-22Z"/>
+    <path d="M40 134c-26 12-34 36-30 62 26-8 42-28 44-50 1-8-6-15-14-12Z"/>
+    <path d="M116 46c24 8 36 26 38 50-24 4-42-8-52-28-4-9 4-20 14-22Z"/>
+    <path d="M138 116c26 12 34 34 30 58-24-6-40-24-42-44-1-8 5-16 12-14Z"/>
+    <path d="M1578 70c30 8 44 30 46 58-28 2-48-14-58-36-4-9 0-19 12-22Z"/>
+    <path d="M1560 134c26 12 34 36 30 62-26-8-42-28-44-50-1-8 6-15 14-12Z"/>
+    <path d="M1484 46c-24 8-36 26-38 50 24 4 42-8 52-28 4-9-4-20-14-22Z"/>
+    <path d="M1462 116c-26 12-34 34-30 58 24-6 40-24 42-44 1-8-5-16-12-14Z"/>
+  </g>
+  <g fill="#ff77c6">
+    <circle cx="35" cy="104" r="10"/><circle cx="24" cy="116" r="6"/><circle cx="47" cy="94" r="6"/>
+    <circle cx="1510" cy="100" r="10"/><circle cx="1499" cy="112" r="6"/><circle cx="1522" cy="90" r="6"/>
+  </g>
+
+  <!-- topiary left -->
+  <g>
+    <ellipse cx="178" cy="668" rx="128" ry="30" fill="#021b18" opacity=".5"/>
+    <path d="M120 560h120l-16 118H136Z" fill="url(#pot)" stroke="#5c2e00" stroke-width="6"/>
+    <rect x="110" y="540" width="140" height="30" rx="12" fill="url(#gold)" stroke="#5c2e00" stroke-width="6"/>
+    <g stroke="#064c34" stroke-width="5">
+      <circle cx="180" cy="470" r="86" fill="url(#leaf)"/>
+      <circle cx="120" cy="520" r="58" fill="url(#leafDark)"/>
+      <circle cx="242" cy="518" r="62" fill="url(#leaf)"/>
+      <circle cx="180" cy="552" r="54" fill="url(#leafDark)"/>
+      <circle cx="94" cy="470" r="38" fill="url(#leaf)"/>
+      <circle cx="266" cy="466" r="40" fill="url(#leafDark)"/>
+    </g>
+    <g fill="#a8ff96" opacity=".4">
+      <circle cx="146" cy="430" r="15"/><circle cx="204" cy="454" r="11"/><circle cx="154" cy="506" r="10"/>
+      <circle cx="256" cy="500" r="9"/><circle cx="102" cy="456" r="7"/>
+    </g>
+    <g fill="#ff6ebd" stroke="#8e135f" stroke-width="3">
+      <circle cx="215" cy="430" r="12"/><circle cx="232" cy="447" r="8"/><circle cx="225" cy="414" r="7"/>
+      <circle cx="104" cy="516" r="10"/><circle cx="119" cy="531" r="6"/>
+    </g>
+  </g>
+
+  <!-- topiary right -->
+  <g>
+    <ellipse cx="1424" cy="668" rx="128" ry="30" fill="#021b18" opacity=".5"/>
+    <path d="M1364 560h120l-16 118h-88Z" fill="url(#pot)" stroke="#5c2e00" stroke-width="6"/>
+    <rect x="1354" y="540" width="140" height="30" rx="12" fill="url(#gold)" stroke="#5c2e00" stroke-width="6"/>
+    <g stroke="#064c34" stroke-width="5">
+      <circle cx="1424" cy="470" r="86" fill="url(#leaf)"/>
+      <circle cx="1364" cy="520" r="58" fill="url(#leafDark)"/>
+      <circle cx="1486" cy="518" r="62" fill="url(#leaf)"/>
+      <circle cx="1424" cy="552" r="54" fill="url(#leafDark)"/>
+      <circle cx="1338" cy="470" r="38" fill="url(#leaf)"/>
+      <circle cx="1510" cy="466" r="40" fill="url(#leafDark)"/>
+    </g>
+    <g fill="#a8ff96" opacity=".4">
+      <circle cx="1390" cy="430" r="15"/><circle cx="1448" cy="454" r="11"/><circle cx="1398" cy="506" r="10"/>
+      <circle cx="1500" cy="500" r="9"/><circle cx="1346" cy="456" r="7"/>
+    </g>
+    <g fill="#ffd45e" stroke="#8e5b13" stroke-width="3">
+      <circle cx="1458" cy="432" r="12"/><circle cx="1475" cy="449" r="8"/><circle cx="1468" cy="416" r="7"/>
+      <circle cx="1350" cy="518" r="10"/><circle cx="1365" cy="533" r="6"/>
+    </g>
+  </g>
+
+  <!-- wall lanterns -->
+  <g>
+    <circle cx="356" cy="220" r="74" fill="url(#lampGlow)" filter="url(#soft)"/>
+    <path d="M340 186h32v58h-32z" fill="#ffd86a" stroke="#7e3e00" stroke-width="4"/>
+    <path d="M332 186h48l-8-26h-32z" fill="url(#gold)" stroke="#7e3e00" stroke-width="4"/>
+    <path d="M344 246h24v18h-24z" fill="#7e3e00"/>
+    <path d="M356 130v30" stroke="#ffcf65" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="1244" cy="220" r="74" fill="url(#lampGlow)" filter="url(#soft)"/>
+    <path d="M1228 186h32v58h-32z" fill="#ffd86a" stroke="#7e3e00" stroke-width="4"/>
+    <path d="M1220 186h48l-8-26h-32z" fill="url(#gold)" stroke="#7e3e00" stroke-width="4"/>
+    <path d="M1232 246h24v18h-24z" fill="#7e3e00"/>
+    <path d="M1244 130v30" stroke="#ffcf65" stroke-width="5" stroke-linecap="round"/>
+  </g>
+
+  <!-- floor -->
+  <path d="M0 640h1600v260H0Z" fill="url(#floor)"/>
+  <ellipse cx="800" cy="690" rx="760" ry="220" fill="url(#floorGlow)"/>
+  <g stroke="#9dfad2" stroke-opacity=".14" stroke-width="2" fill="none">
+    <path d="M800 620 300 900M800 620 560 900M800 620 780 900M800 620 1020 900M800 620 1300 900"/>
+    <path d="M120 900 560 640M350 900 660 640M670 900 745 640M930 900 855 640M1250 900 940 640M1480 900 1040 640"/>
+    <path d="M120 720q680 80 1360 0M50 790q750 90 1500 0M0 860q800 70 1600 0"/>
+  </g>
+
+  <!-- golden stage -->
+  <ellipse cx="800" cy="770" rx="330" ry="98" fill="#021f1c" opacity=".45"/>
+  <ellipse cx="800" cy="766" rx="320" ry="92" fill="url(#stageGlow)"/>
+  <ellipse cx="800" cy="770" rx="304" ry="87" fill="none" stroke="url(#gold)" stroke-width="7" opacity=".9"/>
+  <ellipse cx="800" cy="770" rx="274" ry="76" fill="none" stroke="#ffe99a" stroke-width="2" opacity=".45" stroke-dasharray="10 16"/>
+  <g opacity=".22" fill="#ffe99a">
+    <path d="M800 704l22 46 50 7-36 35 9 50-45-24-45 24 9-50-36-35 50-7z"/>
+  </g>
+
+  <!-- bottom shade -->
+  <rect y="650" width="1600" height="250" fill="url(#bottomShade)"/>
+
+  <!-- sparkles -->
+  <g fill="#fff3b0" opacity=".8">
+    <circle cx="430" cy="176" r="4"/><circle cx="1180" cy="206" r="3"/><circle cx="660" cy="118" r="3"/>
+    <circle cx="300" cy="360" r="3"/><circle cx="1300" cy="360" r="4"/><circle cx="520" cy="560" r="3"/>
+    <circle cx="1110" cy="590" r="3"/><circle cx="380" cy="300" r="2"/><circle cx="1250" cy="310" r="2"/>
+  </g>
+  <g fill="#ff9dda" opacity=".55">
+    <path d="M470 240l4 12 12 4-12 4-4 12-4-12-12-4 12-4z"/>
+    <path d="M1130 250l4 12 12 4-12 4-4 12-4-12-12-4 12-4z"/>
+    <path d="M360 500l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/>
+    <path d="M1235 510l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/>
+  </g>
+</svg>

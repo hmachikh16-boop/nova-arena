@@ -1,0 +1,15 @@
+// Nova Arena standalone Android build. This project is intentionally separate
+// from the Lin Go application and uses its own application id and signing key.
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.0'
+    }
+}
+
+tasks.register('clean', Delete) {
+    delete rootProject.layout.buildDirectory
+}

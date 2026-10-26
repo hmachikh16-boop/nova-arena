@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.NovaArena" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@drawable/nova_splash_bg</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:colorAccent">@color/nova_gold</item>
+        <item name="android:statusBarColor">@color/nova_navy</item>
+        <item name="android:navigationBarColor">@color/nova_navy</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:fontFamily">sans</item>
+    </style>
+</resources>

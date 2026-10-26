@@ -1,0 +1,18 @@
+# Nova Arena standalone Android project
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/*.iml
+android/.idea/
+android/*.keystore
+android/nova-signing.properties
+android/KEYSTORE-CREDENTIALS.txt
+
+# Local deployment metadata
+web/.vercel/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.log

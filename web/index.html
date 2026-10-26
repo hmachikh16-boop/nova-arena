@@ -1,0 +1,589 @@
+﻿<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#09071a" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="description"
+      content="ساحة نوفا — لعبة معارك 3 ضد 3 سريعة بأبطال أصليين، اجمع 10 جواهر وانتصر مع فريقك."
+    />
+    <title>ساحة نوفا — NOVA ARENA</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="stylesheet" href="./arena.css" />
+    <link rel="stylesheet" href="./css/screens.css" />
+    <link rel="stylesheet" href="./css/game.css" />
+    <link rel="stylesheet" href="./css/lobby.css" />
+  </head>
+  <body>
+    <div id="app" class="app-shell">
+      <div class="app-grain" aria-hidden="true"></div>
+
+      <!-- ================= LOBBY ================= -->
+      <section id="lobbyScreen" class="screen lobby-screen nova-lobby">
+        <div class="la-fx" aria-hidden="true">
+          <span class="la-glow la-glow-one"></span>
+          <span class="la-glow la-glow-two"></span>
+          <span class="la-petal p1"></span>
+          <span class="la-petal p2"></span>
+          <span class="la-petal p3"></span>
+          <span class="la-petal p4"></span>
+          <span class="la-petal p5"></span>
+          <span class="la-petal p6"></span>
+          <span class="la-petal p7"></span>
+          <span class="la-petal p8"></span>
+        </div>
+
+        <header class="la-top">
+          <div class="la-top-left">
+            <button class="la-profile" id="profileChip" type="button" title="ملف اللاعب">
+              <span class="la-avatar">
+                <span class="la-avatar-shine"></span>
+                <span class="la-avatar-letter" id="profileInitial">ن</span>
+                <span class="la-level"><small>LV</small><b id="profileLevel">1</b></span>
+              </span>
+              <span class="la-profile-copy">
+                <span class="la-profile-name-row">
+                  <strong id="profileName">قائد نوفا</strong>
+                  <span class="la-profile-trophies" title="مجموع الكؤوس">
+                    <span data-icon="trophy"></span><b id="lobbyTrophyCount">0</b>
+                  </span>
+                </span>
+                <span class="la-profile-rank"><span id="rankTier">مبتدئ</span><i></i><small><b id="profileXpText">0 / 80</b> XP</small></span>
+                <span class="la-xp"><i id="profileXpBar"></i><em></em></span>
+              </span>
+            </button>
+
+            <button class="la-club" id="clubChip" type="button" title="فريق نوفا">
+              <span class="la-club-icon" data-icon="shield"></span>
+              <span class="la-club-copy"><small>فريقي</small><b>NOVA</b></span>
+              <span class="la-club-badge">3</span>
+            </button>
+          </div>
+
+          <div class="la-brand" aria-label="Nova Arena">
+            <span class="la-brand-top"><i></i> ساحة الأبطال <i></i></span>
+            <span class="la-brand-word" dir="ltr"><b>NOVA</b><span>ARENA</span></span>
+            <span class="la-brand-sub">3 vs 3 · جمع الجواهر</span>
+          </div>
+
+          <div class="la-top-right">
+            <div class="la-currency la-coins" title="عملات">
+              <span class="la-currency-icon" id="coinIcon"></span>
+              <b id="coinValue">0</b>
+            </div>
+            <div class="la-currency la-gems" title="جواهر">
+              <span class="la-currency-icon" id="gemIcon"></span>
+              <b id="gemValue">0</b>
+            </div>
+            <button class="la-icon-btn" id="soundToggle" type="button" aria-label="الصوت"></button>
+            <button
+              class="la-menu-btn"
+              id="lobbyMenuButton"
+              type="button"
+              aria-label="القائمة"
+              aria-expanded="false"
+              aria-controls="lobbyMenu"
+            >
+              <span data-icon="menu"></span>
+            </button>
+            <div class="la-menu is-hidden" id="lobbyMenu">
+              <button type="button" id="menuProfile"><span data-icon="user"></span><b>ملف اللاعب</b></button>
+              <button type="button" id="menuQuests"><span data-icon="target"></span><b>مهام اليوم</b></button>
+              <button type="button" id="menuHelp"><span data-icon="book"></span><b>طريقة اللعب</b></button>
+              <button type="button" id="menuFullscreen"><span data-icon="expand"></span><b>ملء الشاشة</b></button>
+            </div>
+          </div>
+        </header>
+
+        <section class="la-hero-bar" aria-label="البطل المختار">
+          <button class="la-hero-bar-main" id="heroBarMain" type="button" aria-label="تفاصيل البطل">
+            <span class="la-hero-bar-trophy"><span data-icon="trophy"></span><b id="heroBarTrophies">0</b></span>
+            <span class="la-hero-bar-power"><small>POWER</small><b id="heroBarPower">1</b></span>
+            <span class="la-hero-bar-copy">
+              <span class="la-hero-bar-top"><b id="heroBarName">نوفا</b><em id="heroBarRarity">ملحمي</em></span>
+              <small id="heroBarTitle">نجمة الساحة</small>
+            </span>
+            <span class="la-hero-bar-role" id="heroBarRole"></span>
+            <span class="la-hero-bar-glyphs" aria-hidden="true">
+              <i class="la-glyph gadget" data-icon="zap"></i>
+              <i class="la-glyph star" data-icon="star"></i>
+            </span>
+            <span class="la-hero-bar-info" data-icon="info"></span>
+          </button>
+          <button class="la-hero-bar-change" id="heroBarChange" type="button">
+            <span data-icon="users"></span><b>تغيير البطل</b>
+          </button>
+        </section>
+
+        <nav class="la-rail la-rail-left" aria-label="اختصارات اللاعب">
+          <button class="la-rail-btn tone-gold" id="openRoster" type="button">
+            <span class="la-rail-icon" data-icon="users"></span>
+            <b>الأبطال</b>
+            <i class="la-rail-badge">10</i>
+          </button>
+          <button class="la-rail-btn tone-yellow" id="openShopBtn" type="button">
+            <span class="la-rail-icon" data-icon="coin"></span>
+            <b>المتجر</b>
+            <i class="la-rail-new">جديد</i>
+          </button>
+          <button class="la-rail-btn tone-green" id="openQuests" type="button">
+            <span class="la-rail-icon" data-icon="target"></span>
+            <b>المهام</b>
+            <i class="la-dot" id="questDot"></i>
+          </button>
+          <button class="la-rail-btn tone-pink" id="openEventsBtn" type="button">
+            <span class="la-rail-icon" data-icon="crown"></span>
+            <b>الفعاليات</b>
+          </button>
+        </nav>
+
+        <nav class="la-rail la-rail-right" aria-label="اختصارات الساحة">
+          <button class="la-rail-btn tone-teal" id="openMapBtn" type="button">
+            <span class="la-rail-icon" data-icon="map"></span>
+            <b>الخريطة</b>
+          </button>
+          <button class="la-rail-btn tone-violet" id="openHelpBtn" type="button">
+            <span class="la-rail-icon" data-icon="book"></span>
+            <b>الأخبار</b>
+          </button>
+          <button class="la-rail-btn tone-blue" id="openFriendsBtn" type="button">
+            <span class="la-rail-icon" data-icon="users"></span>
+            <b>الأصدقاء</b>
+            <i class="la-dot la-dot-soft"></i>
+          </button>
+          <button class="la-rail-btn tone-pink" id="fullscreenBtn" type="button">
+            <span class="la-rail-icon" data-icon="expand"></span>
+            <b>ملء الشاشة</b>
+          </button>
+        </nav>
+
+        <main class="la-stage" id="heroShowcase">
+          <div class="la-stage-glow" id="showcaseAura" aria-hidden="true"></div>
+          <div class="la-rays" aria-hidden="true"></div>
+          <div class="la-rings" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div class="la-hero-floor" aria-hidden="true"></div>
+          <div class="la-petals" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+
+          <button class="la-hero-portrait hero-portrait" id="heroPortrait" type="button" aria-label="بطاقة البطل"></button>
+        </main>
+
+        <footer class="la-dock">
+          <div class="la-dock-left">
+            <div class="la-season-card" aria-label="تقدم الموسم">
+              <span class="la-season-level"><small>LV</small><b id="seasonLevel">1</b></span>
+              <span class="la-season-body">
+                <span class="la-season-head"><b>تقدم الموسم</b><small id="seasonXpText">0 / 80 XP</small></span>
+                <span class="la-season-track"><i id="seasonXpBar"></i></span>
+              </span>
+              <span class="la-season-gift" data-icon="star"></span>
+            </div>
+
+            <button class="la-quest-card" id="questCard" type="button" aria-label="مهام اليوم">
+              <span class="la-quest-emblem" data-icon="target"></span>
+              <span class="la-quest-body">
+                <span class="la-quest-head"><b>مهام اليوم</b><span id="lobbyQuestCount">0 / 4</span></span>
+                <span class="la-quest-track"><i id="lobbyQuestFill"></i></span>
+                <span class="la-quest-dots" id="lobbyQuestDots"></span>
+              </span>
+              <span class="la-quest-ready is-hidden" id="lobbyQuestReady">استلم</span>
+              <span class="la-quest-go" data-icon="right"></span>
+            </button>
+          </div>
+
+          <button class="la-battle-card" id="mapCard" type="button" aria-label="اختيار الخريطة">
+            <span class="la-battle-thumb" id="mapThumb"></span>
+            <span class="la-battle-copy">
+              <span class="la-battle-kicker"><i></i> الخريطة الحالية <em id="mapBadge">الغابة</em></span>
+              <b id="mapName">معبد الغابة</b>
+              <small><span class="la-mode-gem"></span> جمع الجواهر · 3 ضد 3 <span class="la-battle-dot">•</span> <span class="la-battle-reward"><span data-icon="trophy"></span> +8 كأس</span></small>
+              <span class="la-battle-timer"><span data-icon="map"></span> <b id="mapTimer">5 خرائط</b> · اضغط للتبديل</span>
+            </span>
+            <span class="la-battle-side">
+              <span class="la-battle-trophy"><span data-icon="trophy"></span><b>+8</b></span>
+              <span class="la-battle-go" data-icon="right"></span>
+            </span>
+          </button>
+
+          <button class="la-play" id="playButton" type="button">
+            <span class="la-play-shine"></span>
+            <span class="la-play-icon" data-icon="play"></span>
+            <span class="la-play-copy">
+              <b>العب</b>
+              <small>مع <span id="playHeroName">نوفا</span> في الساحة</small>
+            </span>
+            <span class="la-play-arrow" data-icon="right"></span>
+          </button>
+        </footer>
+      </section>
+
+      <!-- ================= HERO DETAILS ================= -->
+      <div
+        class="modal-layer la-hero-layer is-hidden"
+        id="heroDetailsOverlay"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="heroModalName"
+      >
+        <div class="modal-backdrop" data-hero-close></div>
+        <section class="la-hero-modal">
+          <button class="la-modal-close" id="heroDetailsClose" type="button" data-hero-close aria-label="إغلاق">
+            <span data-icon="close"></span>
+          </button>
+          <div class="la-hero-modal-art">
+            <div class="la-hero-modal-glow" id="heroModalAura"></div>
+            <div class="la-hero-modal-art-grid" aria-hidden="true"></div>
+            <div class="la-hero-modal-portrait" id="heroModalPortrait"></div>
+            <span class="la-hero-modal-rarity" id="heroModalRarity">ملحمي</span>
+            <span class="la-hero-modal-level">LV <b>11</b></span>
+          </div>
+          <div class="la-hero-modal-body">
+            <span class="la-hero-modal-latin" id="heroModalLatin" dir="ltr">NOVA</span>
+            <h2 id="heroModalName">نوفا</h2>
+            <p class="la-hero-modal-title" id="heroModalTitle">نجمة الساحة</p>
+            <div class="la-hero-modal-role" id="heroModalRole"></div>
+            <p class="la-hero-modal-desc" id="heroDesc"></p>
+
+            <div class="la-stats" id="heroStats">
+              <div class="la-stat-row">
+                <span class="la-stat-label"><span data-icon="heart"></span> الصحة</span>
+                <span class="la-stat-track"><i id="statHpBar"></i></span>
+                <b id="statHpValue">0</b>
+              </div>
+              <div class="la-stat-row">
+                <span class="la-stat-label"><span data-icon="sword"></span> الضرر</span>
+                <span class="la-stat-track"><i id="statDamageBar"></i></span>
+                <b id="statDamageValue">0</b>
+              </div>
+              <div class="la-stat-row">
+                <span class="la-stat-label"><span data-icon="speed"></span> السرعة</span>
+                <span class="la-stat-track"><i id="statSpeedBar"></i></span>
+                <b id="statSpeedValue">0</b>
+              </div>
+            </div>
+
+            <button class="la-super-card" id="superCard" type="button">
+              <span class="la-super-icon" id="superIcon"></span>
+              <span class="la-super-copy">
+                <small>قدرة السوبر</small>
+                <strong id="superName">الزلزال</strong>
+                <span id="superDesc"></span>
+              </span>
+              <span class="la-super-key">SPACE</span>
+            </button>
+
+            <div class="la-tip"><span>!</span><p id="heroTip"></p></div>
+
+            <div class="la-hero-modal-actions">
+              <button class="la-btn la-btn-gold" id="heroDetailsPlay" type="button">
+                <span data-icon="play"></span> العب بهذا البطل
+              </button>
+              <button class="la-btn la-btn-ghost" id="heroDetailsSelect" type="button">
+                <span data-icon="star"></span> البطل المختار
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ================= HELP ================= -->
+      <div
+        class="modal-layer la-help-layer is-hidden"
+        id="helpOverlay"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="helpTitle"
+      >
+        <div class="modal-backdrop" data-help-close></div>
+        <section class="la-help-panel">
+          <button class="la-modal-close" id="helpClose" type="button" data-help-close aria-label="إغلاق">
+            <span data-icon="close"></span>
+          </button>
+          <span class="la-modal-kicker">دليل الساحة</span>
+          <h2 id="helpTitle">كيف تصبح نجم نوفا؟</h2>
+          <p class="la-help-intro">معركة 3 ضد 3 سريعة. اجمع الجواهر من قلب الساحة، اسقط خصومك، وثبّت تفوقك حتى نهاية الوقت.</p>
+
+          <div class="la-help-grid">
+            <article class="la-help-tile">
+              <span class="la-help-icon">WASD</span>
+              <b>تحرّك بذكاء</b>
+              <p>استخدم WASD أو الأسهم، أو عصا الحركة على الهاتف. الجدران والشجيرات تغيّر مجرى المعركة.</p>
+            </article>
+            <article class="la-help-tile">
+              <span class="la-help-icon la-help-icon-pink">⌖</span>
+              <b>صوّب وأطلق</b>
+              <p>حرّك الفأرة للتصويب واضغط للهجوم. على الهاتف استخدم عصا التصويب واضغط للإطلاق.</p>
+            </article>
+            <article class="la-help-tile">
+              <span class="la-help-icon la-help-icon-cyan">⚡</span>
+              <b>فعّل السوبر</b>
+              <p>املأ عداد السوبر بالضرر، ثم اضغط Space أو زر السوبر لقلب الموازنة في لحظة.</p>
+            </article>
+            <article class="la-help-tile">
+              <span class="la-help-icon la-help-icon-gold">◆</span>
+              <b>اجمع 10 جواهر</b>
+              <p>الجواهر تسقط في مركز الخريطة. عند التعادل أو انتهاء الوقت تبدأ overtime حاسمة.</p>
+            </article>
+          </div>
+
+          <div class="la-help-objective">
+            <span class="la-help-gem" aria-hidden="true">◆</span>
+            <div>
+              <b>قاعدة الفوز</b>
+              <p>امتلك 10 جواهر وأبقِها 15 ثانية، أو تقدّم بفارق الجواهر عند نهاية المباراة. لا تدع خصمك يسرق تقدمك!</p>
+            </div>
+          </div>
+
+          <div class="la-help-actions">
+            <button class="la-btn la-btn-gold" id="helpPlay" type="button"><span data-icon="play"></span> ابدأ المعركة</button>
+            <button class="la-btn la-btn-ghost" type="button" data-help-close>إغلاق</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- ================= ROSTER ================= -->
+      <section id="rosterScreen" class="screen sub-screen is-hidden">
+        <header class="sub-header">
+          <button class="back-button" id="rosterBack" type="button">
+            <span data-icon="back"></span>
+            <b>رجوع</b>
+          </button>
+          <div class="sub-title">
+            <span>فريق النوفا</span>
+            <h2>الأبطال</h2>
+          </div>
+          <div class="sub-header-side">
+            <div class="mini-currency"><span data-icon="trophy"></span><b id="rosterTrophies">0</b></div>
+            <div class="mini-currency"><span data-icon="gem"></span><b id="rosterGems">0</b></div>
+          </div>
+        </header>
+
+        <main class="roster-main">
+          <aside class="roster-info" id="rosterDetail"></aside>
+          <div class="roster-content">
+            <div class="filter-row" id="filterChips" role="tablist" aria-label="تصفية الأبطال"></div>
+            <div class="roster-grid" id="rosterGrid"></div>
+          </div>
+        </main>
+      </section>
+
+      <!-- ================= MISSIONS ================= -->
+      <section id="missionsScreen" class="screen sub-screen is-hidden">
+        <header class="sub-header">
+          <button class="back-button" id="missionsBack" type="button">
+            <span data-icon="back"></span>
+            <b>رجوع</b>
+          </button>
+          <div class="sub-title">
+            <span>تحديات اليوم</span>
+            <h2>المهام</h2>
+          </div>
+          <div class="sub-header-side">
+            <div class="mini-currency"><span data-icon="clock"></span><b id="questsReset">21:00</b></div>
+          </div>
+        </header>
+
+        <main class="missions-main">
+          <section class="mission-hero">
+            <div class="mission-hero-art" aria-hidden="true">
+              <span class="mission-star star-one">★</span>
+              <span class="mission-star star-two">★</span>
+              <span class="mission-star star-three">★</span>
+              <span class="mission-badge">N</span>
+            </div>
+            <div class="mission-hero-copy">
+              <span class="eyebrow">مهام اليوم</span>
+              <h2>أكمل التحديات<br />واحصد الجوائز</h2>
+              <p>تتجدد المهام كل يوم. العب، اجمع الجواهر، وأثبت أنك نجم الساحة.</p>
+            </div>
+            <div class="mission-summary" id="questsSummary"></div>
+          </section>
+          <section class="mission-list" id="questList" aria-live="polite"></section>
+        </main>
+      </section>
+
+      <!-- ================= MATCH ================= -->
+      <section id="matchScreen" class="screen match-screen is-hidden">
+        <div class="match-stage" id="matchStage">
+          <canvas id="arenaCanvas" aria-label="ساحة المعركة"></canvas>
+
+          <div class="match-hud">
+            <div class="match-topbar">
+              <button class="hud-button pause-button" id="pauseButton" type="button" aria-label="إيقاف مؤقت">
+                <span data-icon="pause"></span>
+              </button>
+
+              <div class="scoreboard" id="scoreboard">
+                <div class="team-block ally-block">
+                  <div class="team-faces" id="allyFaces"></div>
+                  <div class="team-score">
+                    <span class="score-gem"></span>
+                    <b id="allyScore">0</b>
+                  </div>
+                </div>
+
+                <div class="match-center">
+                  <span class="match-timer" id="matchTimer">2:30</span>
+                  <span class="match-mode" id="matchMode">جمع الجواهر</span>
+                  <div class="overtime-pill is-hidden" id="overtimePill">
+                    <span>العد التنازلي</span>
+                    <b id="overtimeNumber">15</b>
+                  </div>
+                </div>
+
+                <div class="team-block enemy-block">
+                  <div class="team-score">
+                    <span class="score-gem"></span>
+                    <b id="enemyScore">0</b>
+                  </div>
+                  <div class="team-faces" id="enemyFaces"></div>
+                </div>
+              </div>
+
+              <div class="match-objective">
+                <span class="objective-gem"></span>
+                <div>
+                  <b>اجمع 10 جواهر</b>
+                  <small id="objectiveHint">وثبّت تفوقك 15 ثانية</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="kill-feed" id="killFeed" aria-live="polite"></div>
+
+            <div class="center-announcement" id="centerAnnouncement" aria-live="polite"></div>
+
+            <div class="countdown-splash is-hidden" id="countdownSplash">
+              <span class="countdown-kicker">استعد للمعركة</span>
+              <b id="countdownNumber">3</b>
+              <span class="countdown-line"></span>
+            </div>
+
+            <div class="respawn-panel is-hidden" id="respawnPanel">
+              <span class="respawn-icon">☠</span>
+              <div>
+                <b>عدت إلى الساحة قريباً</b>
+                <span>الإحياء خلال <strong id="respawnTime">3</strong> ثوانٍ</span>
+              </div>
+            </div>
+
+            <div class="match-player-card" id="matchPlayerCard">
+              <div class="match-player-avatar" id="matchPlayerAvatar"></div>
+              <div class="match-player-status">
+                <div class="match-player-line">
+                  <b id="matchPlayerName">نوفا</b>
+                  <span id="matchPlayerHealthText">6400</span>
+                </div>
+                <div class="match-health-track"><i id="matchHealthBar"></i></div>
+                <div class="match-buffs">
+                  <span class="ammo-pips" id="ammoPips">
+                    <i></i><i></i><i></i>
+                  </span>
+                  <span class="match-gem-count"><span></span><b id="matchGemCount">0</b></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="desktop-hint" id="desktopHint">
+              <span><kbd>WASD</kbd> تحرك</span>
+              <span><kbd>فأرة</kbd> صوّب واطلق</span>
+              <span><kbd>Space</kbd> سوبر</span>
+            </div>
+
+            <div class="touch-controls" id="touchControls" aria-hidden="true">
+              <div class="joystick move-joystick" id="moveJoystick">
+                <span class="joystick-arrows">↑</span>
+                <span class="joystick-knob" id="moveKnob"></span>
+                <span class="joystick-label">حركة</span>
+              </div>
+
+              <div class="joystick aim-joystick" id="aimJoystick">
+                <span class="joystick-reticle">✛</span>
+                <span class="joystick-knob" id="aimKnob"></span>
+                <span class="joystick-label">تصويب</span>
+              </div>
+
+              <button class="super-button" id="superButton" type="button" aria-label="قدرة السوبر">
+                <span class="super-button-ring"></span>
+                <span class="super-button-core" id="superIconHud">⚡</span>
+                <span class="super-button-key">سوبر</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="orientation-hint" id="orientationHint">
+          <span data-icon="rotate"></span>
+          <b>أدر هاتفك أفقياً</b>
+          <small>ساحة نوفا مصممة لوضعية العرض الأفقي</small>
+        </div>
+      </section>
+
+      <!-- ================= PAUSE OVERLAY ================= -->
+      <div class="modal-layer is-hidden" id="pauseOverlay" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
+        <div class="modal-backdrop"></div>
+        <div class="pause-panel">
+          <span class="modal-kicker">توقف مؤقت</span>
+          <h2 id="pauseTitle">المعركة متوقفة</h2>
+          <p>خذ نفساً... النوفا تنتظرك.</p>
+          <div class="pause-actions">
+            <button class="primary-action" id="resumeButton" type="button">
+              <span data-icon="play"></span> متابعة اللعب
+            </button>
+            <button class="secondary-action" id="pauseSoundToggle" type="button">
+              <span data-icon="soundOn"></span> <span id="pauseSoundLabel">الصوت مفعّل</span>
+            </button>
+            <button class="danger-action" id="exitMatchButton" type="button">
+              <span data-icon="home"></span> الخروج إلى الساحة
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= RESULT OVERLAY ================= -->
+      <div class="modal-layer result-layer is-hidden" id="resultOverlay" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+        <div class="modal-backdrop"></div>
+        <div class="result-confetti" id="resultConfetti" aria-hidden="true"></div>
+        <div class="result-panel">
+          <div class="result-rays" aria-hidden="true"></div>
+          <span class="result-kicker" id="resultKicker">انتهت المعركة</span>
+          <h2 id="resultTitle">فوز ساحق!</h2>
+          <p id="resultSubtitle">سيطرت على معبد الجواهر</p>
+
+          <div class="result-hero" id="resultHero"></div>
+
+          <div class="result-score-line" id="resultScore">
+            <span class="ally">0</span>
+            <span class="score-divider">—</span>
+            <span class="enemy">0</span>
+          </div>
+
+          <div class="result-stats" id="resultStats"></div>
+          <div class="result-rewards" id="resultRewards"></div>
+
+          <div class="result-actions">
+            <button class="primary-action" id="rematchButton" type="button">
+              <span data-icon="rotate"></span> مباراة أخرى
+            </button>
+            <button class="secondary-action" id="resultHomeButton" type="button">
+              <span data-icon="home"></span> الرئيسية
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="toast-layer" id="toastLayer" aria-live="polite"></div>
+    </div>
+
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>

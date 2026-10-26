@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ساحة نوفا</string>
+    <string name="splash_tagline">NOVA ARENA</string>
+    <string name="splash_loading">جارٍ تجهيز الساحة…</string>
+    <string name="exit_title">الخروج من ساحة نوفا</string>
+    <string name="exit_message">هل تريد إغلاق التطبيق والعودة لاحقاً؟ سيبقى تقدمك محفوظاً على هذا الجهاز.</string>
+    <string name="exit_confirm">خروج</string>
+    <string name="exit_cancel">البقاء</string>
+    <string name="no_browser">لا يوجد تطبيق لفتح هذا الرابط</string>
+</resources>
