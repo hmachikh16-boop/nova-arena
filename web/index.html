@@ -321,7 +321,7 @@
             <article class="la-help-tile">
               <span class="la-help-icon la-help-icon-pink">⌖</span>
               <b>صوّب وأطلق</b>
-              <p>حرّك الفأرة للتصويب واضغط للهجوم. على الهاتف استخدم عصا التصويب واضغط للإطلاق.</p>
+              <p>حرّك الفأرة للتصويب واضغط للهجوم. على الهاتف استخدم عصا التصويب أو زر الهجوم للإطلاق، مع عصا الحركة للتنقل.</p>
             </article>
             <article class="la-help-tile">
               <span class="la-help-icon la-help-icon-cyan">⚡</span>
@@ -511,6 +511,12 @@
                 <span class="joystick-knob" id="aimKnob"></span>
                 <span class="joystick-label">تصويب</span>
               </div>
+
+              <button class="attack-button" id="attackButton" type="button" aria-label="إطلاق النار">
+                <span class="attack-button-ring"></span>
+                <span class="attack-button-core"><span data-icon="crosshair"></span></span>
+                <span class="attack-button-key">هجوم</span>
+              </button>
 
               <button class="super-button" id="superButton" type="button" aria-label="قدرة السوبر">
                 <span class="super-button-ring"></span>

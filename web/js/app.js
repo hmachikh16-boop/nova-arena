@@ -1075,6 +1075,17 @@ const matchController = new MatchController({
   toast: showToast,
 });
 
+// Local-only hook used by the browser regression suite. It is intentionally
+// unavailable on the deployed domain and inside the Android WebView.
+if (location.hostname === '127.0.0.1' || location.hostname === 'localhost') {
+  window.NovaArenaDebug = {
+    get game() {
+      return matchController.game;
+    },
+    controller: matchController,
+  };
+}
+
 // Lets the standalone Android shell use the system back gesture without
 // closing the app in the middle of a match. Returns true when it handled it.
 window.NovaArenaAndroidBack = () => {

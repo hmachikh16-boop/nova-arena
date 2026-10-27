@@ -1,6 +1,7 @@
 import { audio } from '../audio.js';
 import { distance, random } from './utils.js';
 import { applyDamage, healEntity } from './combat.js';
+import { damageCrate } from './props.js';
 
 export function spawnParticles(game, x, y, color, count = 8, options = {}) {
   if (game.particles.length > 520) return;
@@ -189,8 +190,41 @@ export function updateProjectiles(game, dt) {
           lifeMax: 0.3,
           shape: 'spark',
         });
+        game.effects.push({
+          type: 'ring',
+          x: projectile.x,
+          y: projectile.y,
+          startRadius: 2,
+          endRadius: 14,
+          width: 2,
+          color: projectile.color,
+          life: 0.16,
+          maxLife: 0.16,
+        });
         break;
       }
+
+      if (projectile.heal <= 0) {
+        for (const crate of game.crates) {
+          if (!crate.alive) continue;
+          if (distance(crate.x, crate.y, projectile.x, projectile.y) > crate.radius + projectile.radius + 2) {
+            continue;
+          }
+          damageCrate(game, crate, projectile.damage, projectile.owner);
+          projectile.alive = false;
+          spawnParticles(game, projectile.x, projectile.y, projectile.color, 8, {
+            speedMin: 35,
+            speedMax: 180,
+            sizeMin: 1,
+            sizeMax: 3,
+            lifeMin: 0.1,
+            lifeMax: 0.35,
+            shape: 'spark',
+          });
+          break;
+        }
+      }
+      if (!projectile.alive) break;
 
       for (const entity of game.entities) {
         if (!entity.alive) continue;

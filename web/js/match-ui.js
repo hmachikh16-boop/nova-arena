@@ -44,7 +44,12 @@ export class MatchController {
     this.killFeedTimers = new Set();
     this.stickState = new Map();
     this.shooting = false;
-    this.boundPointerUp = () => this.stopMouseShooting();
+    this.attackHeld = false;
+    this.aimHeld = false;
+    this.boundPointerUp = (event) => {
+      if (event?.pointerType && event.pointerType !== 'mouse') return;
+      this.stopMouseShooting();
+    };
     this.cacheDom();
     this.bindStaticEvents();
     this.setupJoysticks();
@@ -91,6 +96,7 @@ export class MatchController {
     this.moveKnob = $('moveKnob');
     this.aimKnob = $('aimKnob');
     this.superButton = $('superButton');
+    this.attackButton = $('attackButton');
     this.superIcon = $('superIconHud');
     this.pauseOverlay = $('pauseOverlay');
     this.resumeButton = $('resumeButton');
@@ -120,6 +126,10 @@ export class MatchController {
     this.rematchButton?.addEventListener('click', () => this.rematch());
     this.resultHomeButton?.addEventListener('click', () => this.returnHome());
     this.superButton?.addEventListener('click', () => this.fireSuper());
+    this.attackButton?.addEventListener('pointerdown', (event) => this.startAttackButton(event));
+    this.attackButton?.addEventListener('pointerup', (event) => this.stopAttackButton(event));
+    this.attackButton?.addEventListener('pointercancel', (event) => this.stopAttackButton(event));
+    this.attackButton?.addEventListener('lostpointercapture', () => this.stopAttackButton());
     this.stage?.addEventListener('contextmenu', (event) => event.preventDefault());
     this.stage?.addEventListener('pointermove', (event) => this.handleStagePointerMove(event));
     this.canvas?.addEventListener('pointerdown', (event) => this.handleStagePointerDown(event));
@@ -163,6 +173,8 @@ export class MatchController {
     this.isActive = true;
     this.paused = false;
     this.shooting = false;
+    this.attackHeld = false;
+    this.aimHeld = false;
     this.touchMode = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
     document.body.classList.add('in-match');
     document.body.classList.toggle('has-touch', this.touchMode);
@@ -256,6 +268,7 @@ export class MatchController {
       this.superButton.style.setProperty('--charge', '0%');
       this.superButton.classList.remove('is-ready', 'is-denied');
     }
+    this.attackButton?.classList.remove('is-pressed');
     this.resetJoysticks();
   }
 
@@ -380,20 +393,56 @@ export class MatchController {
     this.updateAimFromEvent(event);
     this.shooting = true;
     this.game.setShooting(true);
+    // Click-to-shoot must feel instant instead of waiting for the next tick.
+    if (this.game.player?.alive) this.game.tryAttack(this.game.player, this.game.player.aim);
   }
 
   updateAimFromEvent(event) {
     const rect = this.canvas.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
-    const x = ((event.clientX - rect.left) / rect.width) * 1280;
-    const y = ((event.clientY - rect.top) / rect.height) * 720;
-    if (x < 0 || y < 0 || x > 1280 || y > 720) return;
-    this.game.setAimWorld(x, y);
+    if (
+      event.clientX < rect.left ||
+      event.clientY < rect.top ||
+      event.clientX > rect.right ||
+      event.clientY > rect.bottom
+    ) {
+      return;
+    }
+    const point = this.game.screenToWorld(event.clientX, event.clientY);
+    if (point.x < 0 || point.y < 0 || point.x > 1280 || point.y > 720) return;
+    this.game.setAimWorld(point.x, point.y);
   }
 
   stopMouseShooting() {
     this.shooting = false;
-    this.game?.setShooting(false);
+    if (!this.attackHeld && !this.aimHeld) this.game?.setShooting(false);
+  }
+
+  startAttackButton(event) {
+    if (!this.game || !this.isActive || this.paused) return;
+    if (event.pointerType === 'mouse') return;
+    event.preventDefault();
+    event.stopPropagation();
+    audio.unlock();
+    if (this.game.phase !== 'playing') return;
+    if (!this.game.player?.alive) return;
+    this.attackButton?.classList.add('is-pressed');
+    this.attackButton?.setPointerCapture?.(event.pointerId);
+    if (!this.game.touchAim.active) this.game.aimNearestEnemy();
+    this.attackHeld = true;
+    this.game.setShooting(true);
+    // A short tap must fire immediately; holding the button keeps auto-fire on.
+    this.game.tryAttack(this.game.player, this.game.player.aim);
+  }
+
+  stopAttackButton(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.attackButton?.classList.remove('is-pressed');
+    this.attackHeld = false;
+    if (!this.aimHeld && !this.shooting) this.game?.setShooting(false);
   }
 
   setupJoysticks() {
@@ -416,6 +465,7 @@ export class MatchController {
       knob: this.aimKnob,
       onStart: () => {
         if (!this.game) return;
+        this.aimHeld = true;
         this.game.aimNearestEnemy();
         this.game.setTouchAim(0, 0, false);
         this.game.setShooting(true);
@@ -427,7 +477,8 @@ export class MatchController {
         this.game.setShooting(true);
       },
       onEnd: () => {
-        this.game?.setShooting(false);
+        this.aimHeld = false;
+        if (!this.attackHeld && !this.shooting) this.game?.setShooting(false);
         this.game?.setTouchAim(0, 0, false);
       },
     });
@@ -502,6 +553,9 @@ export class MatchController {
     if (this.aimKnob) this.aimKnob.style.transform = 'translate(0px, 0px)';
     this.moveJoystick?.classList.remove('is-dragging');
     this.aimJoystick?.classList.remove('is-dragging');
+    this.attackButton?.classList.remove('is-pressed');
+    this.attackHeld = false;
+    this.aimHeld = false;
     if (this.game) {
       this.game.setTouchMove(0, 0, false);
       this.game.setTouchAim(0, 0, false);

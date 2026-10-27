@@ -11,18 +11,23 @@ function withOutline(ctx, fill, stroke = INK, width = 3) {
 }
 
 function drawFeet(ctx, entity, time) {
-  const moving = entity.moving ? 1 : 0;
-  const cycle = Math.sin(entity.walkPhase * 1.7) * 4 * moving;
+  const speedRatio = Math.max(0, Math.min(1, entity.speedRatio || 0));
+  const moving = entity.animState === 'run' || (entity.moving && speedRatio > 0.03);
+  const idleSway = Math.sin((time || entity.animTime || 0) * 2.2 + entity.id) * 0.8;
+  const cycle = moving
+    ? Math.sin(entity.walkPhase * 1.7) * (2.4 + speedRatio * 4.2)
+    : idleSway;
+  const lift = moving ? Math.max(0, Math.sin(entity.walkPhase * 1.7)) * 1.5 * speedRatio : 0;
   ctx.save();
   ctx.fillStyle = '#151323';
   ctx.strokeStyle = INK;
   ctx.lineWidth = 2.5;
   [
-    { y: -8, offset: cycle },
-    { y: 8, offset: -cycle },
+    { y: -8, offset: cycle, lift: lift },
+    { y: 8, offset: -cycle, lift: 0 },
   ].forEach((foot) => {
     ctx.beginPath();
-    ctx.ellipse(-8 + foot.offset, foot.y, 7.5, 5, 0, 0, Math.PI * 2);
+    ctx.ellipse(-8 + foot.offset, foot.y - foot.lift, 7.5, 5, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
   });
@@ -1082,8 +1087,30 @@ const BODY_RENDERERS = {
   sharky: drawSharky,
 };
 
+function drawFallenBrawler(ctx, game, entity) {
+  const duration = entity.deathDuration || 0.72;
+  const progress = Math.min(1, Math.max(0, 1 - entity.deathTimer / duration));
+  const alpha = Math.max(0, 1 - progress * 1.08);
+  const fall = Math.min(1, progress * 1.35);
+  ctx.save();
+  ctx.globalAlpha = alpha * 0.86;
+  ctx.fillStyle = 'rgba(2,12,17,.34)';
+  ctx.beginPath();
+  ctx.ellipse(entity.x + 2, entity.y + 20, entity.radius + 8, entity.radius * 0.55, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.translate(entity.x, entity.y - 3);
+  ctx.rotate((entity.deathAngle || 0) + fall * 1.2);
+  ctx.translate(0, fall * 7);
+  ctx.scale(1.16 * (1 - fall * 0.2), 1.16 * (1 - fall * 0.36));
+  (BODY_RENDERERS[entity.heroId] || drawNajm)(ctx, entity);
+  ctx.restore();
+}
+
 export function drawBrawler(ctx, game, entity) {
-  if (!entity.alive) return;
+  if (!entity.alive) {
+    if (entity.deathTimer > 0) drawFallenBrawler(ctx, game, entity);
+    return;
+  }
   const hiddenFromViewer =
     entity.team !== game.player.team &&
     entity.hidden &&
@@ -1093,7 +1120,22 @@ export function drawBrawler(ctx, game, entity) {
   const invulnerable = entity.invulnerableUntil > now;
   const superReady = entity.superCharge >= 1;
   const teamColor = entity.team === 0 ? game.arena.palette.ally : game.arena.palette.enemy;
-  const bob = entity.moving ? Math.sin(entity.walkPhase * 1.7) * 1.6 : Math.sin(now * 2.2 + entity.id) * 0.7;
+  const speedRatio = Math.max(0, Math.min(1.3, entity.speedRatio || 0));
+  const runCycle = Math.sin(entity.walkPhase * 1.7);
+  const idleCycle = Math.sin(now * 2.2 + entity.id);
+  const attack = Math.max(0, Math.min(1, entity.attackAnim || 0));
+  const attackPulse = Math.sin(attack * Math.PI);
+  const hit = Math.max(0, Math.min(1, entity.hitAnim || 0));
+  const hitShake = hit > 0 ? Math.sin(now * 72 + entity.id) * hit * 2.1 : 0;
+  const spawn = Math.max(0, Math.min(1, entity.spawnAnim || 0));
+  const bob = entity.moving
+    ? runCycle * 1.7 * Math.max(0.25, speedRatio)
+    : idleCycle * 0.7;
+  const lateral =
+    -Math.sin(entity.aim) * (entity.velocityX || 0) +
+    Math.cos(entity.aim) * (entity.velocityY || 0);
+  const lean = Math.max(-0.13, Math.min(0.13, lateral / 900));
+  const runSquash = entity.moving ? Math.abs(runCycle) * 0.018 * speedRatio : 0;
 
   ctx.save();
   ctx.globalAlpha = alpha;
@@ -1147,13 +1189,38 @@ export function drawBrawler(ctx, game, entity) {
   }
 
   ctx.translate(entity.x, entity.y - 3 + bob);
-  ctx.scale(1.16, 1.16);
-  ctx.rotate(entity.aim);
+  ctx.scale(
+    1.16 + attackPulse * 0.065 + spawn * 0.12 + runSquash,
+    1.16 - attackPulse * 0.045 + spawn * 0.12 - runSquash,
+  );
+  ctx.rotate(entity.aim + lean);
+  ctx.translate(attackPulse * 4.2 + hitShake, 0);
   (BODY_RENDERERS[entity.heroId] || drawNajm)(ctx, entity);
 
-  if (now < entity.flashUntil) {
+  if (attackPulse > 0.04) {
+    const muzzle = entity.radius + 17;
+    ctx.save();
+    ctx.translate(muzzle, 0);
     ctx.globalCompositeOperation = 'lighter';
-    ctx.globalAlpha = alpha * 0.45;
+    ctx.globalAlpha = attackPulse * 0.95;
+    ctx.fillStyle = entity.hero.color;
+    ctx.beginPath();
+    ctx.moveTo(15 * attackPulse, 0);
+    ctx.lineTo(-4, 7 * attackPulse);
+    ctx.lineTo(-1, 0);
+    ctx.lineTo(-4, -7 * attackPulse);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#fff8dc';
+    ctx.beginPath();
+    ctx.arc(0, 0, 3.2 * attackPulse, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  if (now < entity.flashUntil || hit > 0.02) {
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = alpha * (0.45 + hit * 0.2);
     ctx.fillStyle = '#ffffff';
     ctx.beginPath();
     ctx.arc(0, 0, entity.radius + 5, 0, Math.PI * 2);

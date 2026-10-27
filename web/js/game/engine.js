@@ -2,6 +2,8 @@ import { arenaById, BOT_NAMES, DIFFICULTY, HERO_ORDER, HEROES, WORLD } from '../
 import { audio } from '../audio.js';
 import { createWorldMap } from './map.js';
 import { ArenaRenderer } from './renderer.js';
+import { ArenaCamera } from './camera.js';
+import { createCrates, updateCrates } from './props.js';
 import { updateBot } from './ai.js';
 import {
   tryAttack,
@@ -19,10 +21,12 @@ import {
   spawnParticles,
   addFloatingText,
 } from './items.js';
-import { clamp, distance, normalize, random, shuffle } from './utils.js';
+import { approach, circleHitsRect, clamp, distance, normalize, random, shuffle } from './utils.js';
 
 const RESPAWN_SECONDS = 3.3;
 const COUNTDOWN_SECONDS = 3;
+const MOVE_ACCELERATION = 1850;
+const MOVE_BRAKE = 2600;
 
 export class ArenaGame {
   constructor(canvas, options = {}) {
@@ -37,6 +41,7 @@ export class ArenaGame {
     this.arenaId = this.arena.id;
     this.worldMap = createWorldMap(this.arena);
     this.renderer = new ArenaRenderer();
+    this.crates = createCrates(this.worldMap, this.arena);
 
     this.phase = 'countdown';
     this.countdown = COUNTDOWN_SECONDS;
@@ -55,6 +60,7 @@ export class ArenaGame {
     this.resultSent = false;
     this.endTimer = 0;
     this.shake = 0;
+    this.hitStop = 0;
     this.destroyed = false;
 
     this.entities = [];
@@ -73,10 +79,14 @@ export class ArenaGame {
     this.shooting = false;
 
     this.setupTeams();
+    this.camera = new ArenaCamera(WORLD);
+    this.camera.snap(this.player.x, this.player.y);
     this.setupCanvas();
     this.bindInput();
     this.lastFrame = performance.now();
     this.lastHudAt = 0;
+    this.fixedStep = 1 / 60;
+    this.accumulator = 0;
     this.loop = this.loop.bind(this);
     this.raf = requestAnimationFrame(this.loop);
 
@@ -145,8 +155,23 @@ export class ArenaGame {
       aimSource: 'center',
       moving: false,
       walkPhase: random(0, 7),
+      inputX: 0,
+      inputY: 0,
+      vx: 0,
+      vy: 0,
       velocityX: 0,
       velocityY: 0,
+      speedRatio: 0,
+      animState: 'idle',
+      animTime: random(0, 3),
+      attackAnim: 0,
+      attackAngle: targetAngle,
+      hitAnim: 0,
+      hitAngle: targetAngle,
+      spawnAnim: 1,
+      deathTimer: 0,
+      deathDuration: 0.72,
+      deathAngle: targetAngle,
       ammo: hero.attack.ammo,
       attackCooldown: 0,
       reloadTimer: 0,
@@ -251,6 +276,30 @@ export class ArenaGame {
     this.mouse.y = y;
     this.mouse.active = true;
     if (this.player) this.player.aimSource = 'mouse';
+  }
+
+  screenToWorld(clientX, clientY) {
+    const rect = this.canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return { x: 0, y: 0 };
+    const screenX = ((clientX - rect.left) / rect.width) * WORLD.width;
+    const screenY = ((clientY - rect.top) / rect.height) * WORLD.height;
+    return this.camera.screenToWorld(screenX, screenY, WORLD.width, WORLD.height);
+  }
+
+  blocksMovement(x, y, radius, ignoreCrates = false) {
+    if (this.worldMap.collides(x, y, radius)) return true;
+    if (ignoreCrates) return false;
+    for (const crate of this.crates) {
+      if (!crate.alive) continue;
+      const rect = {
+        x: crate.x - crate.w / 2,
+        y: crate.y - crate.h / 2,
+        w: crate.w,
+        h: crate.h,
+      };
+      if (circleHitsRect(x, y, radius + 2, rect)) return true;
+    }
+    return false;
   }
 
   setShooting(value) {
@@ -395,17 +444,17 @@ export class ArenaGame {
     return multiplier;
   }
 
-  tryMove(entity, deltaX, deltaY) {
+  tryMove(entity, deltaX, deltaY, ignoreCrates = false) {
     const steps = Math.max(1, Math.ceil(Math.max(Math.abs(deltaX), Math.abs(deltaY)) / 7));
     const stepX = deltaX / steps;
     const stepY = deltaY / steps;
     const startX = entity.x;
     const startY = entity.y;
     for (let step = 0; step < steps; step += 1) {
-      if (!this.worldMap.collides(entity.x + stepX, entity.y, entity.radius)) {
+      if (!this.blocksMovement(entity.x + stepX, entity.y, entity.radius, ignoreCrates)) {
         entity.x += stepX;
       }
-      if (!this.worldMap.collides(entity.x, entity.y + stepY, entity.radius)) {
+      if (!this.blocksMovement(entity.x, entity.y + stepY, entity.radius, ignoreCrates)) {
         entity.y += stepY;
       }
     }
@@ -415,17 +464,52 @@ export class ArenaGame {
   moveActor(entity, directionX, directionY, dt, speedScale = 1) {
     if (!entity.alive) return;
     const direction = normalize(directionX, directionY);
-    if (direction.length < 0.02) return;
-    const speed = entity.hero.speed * this.getSpeedMultiplier(entity) * speedScale;
-    this.tryMove(entity, direction.x * speed * dt, direction.y * speed * dt);
+    if (direction.length < 0.02) {
+      entity.inputX = 0;
+      entity.inputY = 0;
+      return;
+    }
+    entity.inputX = direction.x * Math.min(1, direction.length) * speedScale;
+    entity.inputY = direction.y * Math.min(1, direction.length) * speedScale;
+  }
+
+  applyLocomotion(entity, dt) {
+    if (!entity.alive) return { x: 0, y: 0 };
+    const maxSpeed = entity.hero.speed * this.getSpeedMultiplier(entity);
+    const targetX = entity.inputX * maxSpeed;
+    const targetY = entity.inputY * maxSpeed;
+    const hasInput = Math.hypot(entity.inputX, entity.inputY) > 0.03;
+    const response = (hasInput ? MOVE_ACCELERATION : MOVE_BRAKE) * dt;
+    entity.vx = approach(entity.vx, targetX, response);
+    entity.vy = approach(entity.vy, targetY, response);
+    const requestedX = entity.vx * dt;
+    const requestedY = entity.vy * dt;
+    const moved = this.tryMove(entity, requestedX, requestedY);
+    if (Math.abs(requestedX) > 0.001 && Math.abs(moved.x) < Math.abs(requestedX) * 0.45) {
+      entity.vx *= 0.12;
+    }
+    if (Math.abs(requestedY) > 0.001 && Math.abs(moved.y) < Math.abs(requestedY) * 0.45) {
+      entity.vy *= 0.12;
+    }
+    return moved;
   }
 
   loop(now) {
     if (!this.running) return;
     this.raf = requestAnimationFrame(this.loop);
-    const dt = clamp((now - this.lastFrame) / 1000, 0.001, 0.034);
+    const frameTime = clamp((now - this.lastFrame) / 1000, 0.001, 0.1);
     this.lastFrame = now;
-    if (!this.paused) this.update(dt);
+    if (!this.paused) {
+      this.accumulator += frameTime;
+      let steps = 0;
+      while (this.accumulator >= this.fixedStep && steps < 5) {
+        this.update(this.fixedStep);
+        this.accumulator -= this.fixedStep;
+        steps += 1;
+      }
+      if (steps >= 5) this.accumulator = 0;
+      this.camera.update(frameTime, this.player);
+    }
     this.draw();
   }
 
@@ -456,8 +540,15 @@ export class ArenaGame {
 
     if (this.phase !== 'playing') return;
 
+    if (this.hitStop > 0) {
+      this.hitStop = Math.max(0, this.hitStop - dt);
+      this.emitHud();
+      return;
+    }
+
     this.matchTime -= dt;
     this.updateSpawner(dt);
+    updateCrates(this, dt);
     this.updateEntities(dt);
     updateProjectiles(this, dt);
     updateGems(this, dt);
@@ -502,8 +593,11 @@ export class ArenaGame {
     for (const entity of this.entities) {
       entity.attackCooldown = Math.max(0, entity.attackCooldown - dt);
       entity.recoil = Math.max(0, entity.recoil - dt * 5.5);
+      entity.inputX = 0;
+      entity.inputY = 0;
 
       if (!entity.alive) {
+        entity.deathTimer = Math.max(0, entity.deathTimer - dt);
         entity.respawnTimer -= dt;
         if (entity.respawnTimer <= 0) this.respawnEntity(entity);
         continue;
@@ -549,12 +643,28 @@ export class ArenaGame {
       } else {
         updateBot(this, entity, dt);
       }
+      this.applyLocomotion(entity, dt);
       const moved = distance(beforeX, beforeY, entity.x, entity.y);
+      const actualSpeed = dt > 0 ? moved / dt : 0;
       entity.moving = moved > 0.15;
+      entity.speedRatio = clamp(actualSpeed / Math.max(1, entity.hero.speed), 0, 1.3);
       entity.velocityX = dt > 0 ? (entity.x - beforeX) / dt : 0;
       entity.velocityY = dt > 0 ? (entity.y - beforeY) / dt : 0;
+      entity.attackAnim = Math.max(0, entity.attackAnim - dt * 5.2);
+      entity.hitAnim = Math.max(0, entity.hitAnim - dt * 4.6);
+      entity.spawnAnim = Math.max(0, entity.spawnAnim - dt * 2.8);
+      entity.animTime += dt;
+      entity.animState =
+        entity.attackAnim > 0.08
+          ? 'attack'
+          : entity.hitAnim > 0.12
+            ? 'hit'
+            : entity.moving
+              ? 'run'
+              : 'idle';
+
       if (entity.moving) {
-        entity.walkPhase += dt * (8 + entity.hero.speed * 0.02);
+        entity.walkPhase += dt * (7 + entity.speedRatio * 14);
         entity.stepTimer -= dt;
         if (entity.stepTimer <= 0) {
           entity.stepTimer = 0.3;
@@ -648,6 +758,18 @@ export class ArenaGame {
     entity.hidden = false;
     entity.inBush = false;
     entity.moving = false;
+    entity.inputX = 0;
+    entity.inputY = 0;
+    entity.vx = 0;
+    entity.vy = 0;
+    entity.velocityX = 0;
+    entity.velocityY = 0;
+    entity.speedRatio = 0;
+    entity.animState = 'idle';
+    entity.attackAnim = 0;
+    entity.hitAnim = 0;
+    entity.spawnAnim = 1;
+    entity.deathTimer = 0;
     entity.knockback = null;
     entity.shieldHp = 0;
     entity.speedBoostUntil = 0;
@@ -767,6 +889,8 @@ export class ArenaGame {
     const ctx = this.ctx;
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
     ctx.clearRect(0, 0, WORLD.width, WORLD.height);
+    ctx.fillStyle = this.arena.palette.border;
+    ctx.fillRect(0, 0, WORLD.width, WORLD.height);
     this.renderer.draw(this);
   }
 

@@ -1312,6 +1312,97 @@ body.has-touch .super-button {
 }
 
 /* ================================================================
+   ATTACK BUTTON
+   ================================================================ */
+
+.attack-button {
+  position: absolute;
+  z-index: 4;
+  right: calc(max(24px, env(safe-area-inset-right)) + clamp(112px, 13.4vw, 154px));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  display: none;
+  place-items: center;
+  width: clamp(62px, 7vw, 78px);
+  height: clamp(62px, 7vw, 78px);
+  border-radius: 50%;
+  pointer-events: auto;
+  touch-action: none;
+  filter: drop-shadow(0 6px 13px rgba(0, 0, 0, 0.4));
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+body.has-touch .attack-button {
+  display: grid;
+}
+
+.attack-button-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from -90deg, #ffcf67, #ff8d5e 38%, rgba(255, 255, 255, 0.14) 38% 100%);
+  box-shadow:
+    0 0 0 1.5px rgba(255, 240, 190, 0.42),
+    0 0 0 4px rgba(5, 3, 16, 0.55),
+    0 0 18px rgba(255, 173, 70, 0.2);
+}
+
+.attack-button-ring::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(70, 48, 96, 0.98), rgba(17, 10, 32, 0.99));
+  border: 1px solid rgba(255, 255, 255, 0.11);
+}
+
+.attack-button-core {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 72%;
+  height: 72%;
+  border-radius: 50%;
+  color: #fff3c8;
+  background:
+    radial-gradient(circle at 38% 28%, rgba(255, 255, 255, 0.2), transparent 34%),
+    linear-gradient(145deg, rgba(177, 101, 44, 0.86), rgba(76, 28, 25, 0.92));
+  border: 1px solid rgba(255, 225, 168, 0.32);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.attack-button-core .ui-icon {
+  width: 50%;
+  height: 50%;
+  stroke-width: 2.3;
+}
+
+.attack-button-key {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+  padding: 0 5px;
+  border-radius: 99px;
+  color: rgba(255, 245, 220, 0.5);
+  background: rgba(6, 4, 17, 0.65);
+  font-size: 6px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.attack-button:hover {
+  filter: drop-shadow(0 8px 17px rgba(0, 0, 0, 0.46)) brightness(1.08);
+}
+
+.attack-button.is-pressed {
+  transform: scale(0.9);
+  filter: drop-shadow(0 0 18px rgba(255, 190, 86, 0.42)) brightness(1.12);
+}
+
+/* ================================================================
    ORIENTATION
    ================================================================ */
 
@@ -1643,6 +1734,17 @@ body.has-touch .super-button {
     bottom: calc(max(12px, env(safe-area-inset-bottom)) + 102px);
   }
 
+  .attack-button {
+    width: 56px;
+    height: 56px;
+    right: calc(max(12px, env(safe-area-inset-right)) + 106px);
+    bottom: max(14px, env(safe-area-inset-bottom));
+  }
+
+  .attack-button-key {
+    display: none;
+  }
+
   .desktop-hint {
     bottom: 7px;
     padding: 4px 7px;
@@ -1685,6 +1787,12 @@ body.has-touch .super-button {
 
   body.has-touch .super-button {
     bottom: calc(max(10px, env(safe-area-inset-bottom)) + 98px);
+  }
+
+  .attack-button {
+    width: 52px;
+    height: 52px;
+    right: calc(max(10px, env(safe-area-inset-right)) + 98px);
   }
 }
 

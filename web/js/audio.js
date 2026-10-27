@@ -125,6 +125,19 @@ const library = {
     noise({ duration: 0.08, gain: 0.1, frequency: 900, q: 0.9, type: 'lowpass' });
     tone({ frequency: 200, endFrequency: 90, duration: 0.08, type: 'square', gain: 0.05 });
   },
+  crateHit() {
+    if (!gate('crate-hit', 55)) return;
+    noise({ duration: 0.07, gain: 0.09, frequency: 680, q: 0.8, type: 'bandpass' });
+    tone({ frequency: 230, endFrequency: 140, duration: 0.08, type: 'triangle', gain: 0.06 });
+  },
+  crateBreak() {
+    if (!gate('crate-break', 140)) return;
+    noise({ duration: 0.28, gain: 0.16, frequency: 420, q: 0.55, type: 'lowpass' });
+    tone({ frequency: 160, endFrequency: 48, duration: 0.34, type: 'square', gain: 0.1 });
+    [520, 780].forEach((frequency, index) => {
+      tone({ frequency, duration: 0.12, type: 'triangle', gain: 0.05, delay: 0.05 + index * 0.05 });
+    });
+  },
   heal() {
     if (!gate('heal', 70)) return;
     tone({ frequency: 420, endFrequency: 660, duration: 0.18, type: 'sine', gain: 0.07 });

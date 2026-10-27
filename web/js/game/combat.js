@@ -1,5 +1,6 @@
 import { WORLD } from '../data.js';
 import { audio } from '../audio.js';
+import { damageCrate } from './props.js';
 import { distance, pointSegmentDistance, random } from './utils.js';
 
 function playCombatSound(game, name, parameter, x, y) {
@@ -45,10 +46,23 @@ export function tryAttack(game, entity, angle) {
   entity.attackCooldown = attack.cooldown;
   entity.recoil = Math.min(1, (entity.recoil || 0) + 1.2);
   entity.lastAttackAt = game.elapsed;
+  entity.attackAnim = 1;
+  entity.attackAngle = angle;
+  entity.aim = angle;
   if (entity.ammo < attack.ammo) entity.reloadTimer = 0;
 
   const muzzleX = entity.x + Math.cos(angle) * (entity.radius + attack.muzzle);
   const muzzleY = entity.y + Math.sin(angle) * (entity.radius + attack.muzzle);
+  game.effects.push({
+    type: 'muzzle',
+    x: muzzleX,
+    y: muzzleY,
+    angle,
+    color: attack.color,
+    size: attack.type === 'shotgun' ? 22 : 15,
+    life: 0.09,
+    maxLife: 0.09,
+  });
   game.spawnParticles(muzzleX, muzzleY, attack.color, 6, {
     speedMin: 40,
     speedMax: 210,
@@ -60,7 +74,8 @@ export function tryAttack(game, entity, angle) {
     angle,
     cone: 0.7,
   });
-  if (attack.type === 'shotgun') game.shake = Math.max(game.shake, 3.5);
+  if (attack.type === 'shotgun') game.shake = Math.max(game.shake, entity.isPlayer ? 3.5 : 2.5);
+  else if (entity.isPlayer) game.shake = Math.max(game.shake, 1.2);
   playCombatSound(game, 'shoot', attack.type, entity.x, entity.y);
   return true;
 }
@@ -91,6 +106,9 @@ export function useSuper(game, entity, angle = entity.aim) {
   entity.superCharge = 0;
   entity.lastAttackAt = game.elapsed;
   entity.recoil = 1.4;
+  entity.attackAnim = 1;
+  entity.attackAngle = angle;
+  entity.aim = angle;
   game.emitEvent({
     type: 'super',
     heroId: entity.heroId,
@@ -139,6 +157,11 @@ export function useSuper(game, entity, angle = entity.aim) {
       slow: superData.slow,
       knockback: 300,
     });
+    for (const crate of game.crates) {
+      if (crate.alive && distance(crate.x, crate.y, entity.x, entity.y) <= superData.radius + crate.radius) {
+        damageCrate(game, crate, superData.damage, entity);
+      }
+    }
     entity.shieldHp = Math.max(entity.shieldHp, 900);
     entity.shieldUntil = Math.max(entity.shieldUntil, game.elapsed + superData.shield);
     game.addFloatingText(entity.x, entity.y - 58, 'درع!', '#9dfcff', 16);
@@ -181,6 +204,18 @@ export function useSuper(game, entity, angle = entity.aim) {
       );
       if (perpendicular > superData.width / 2 + enemy.radius) continue;
       applyDamage(game, enemy, superData.damage, entity, { beam: true });
+    }
+    for (const crate of game.crates) {
+      if (!crate.alive) continue;
+      const projection =
+        (crate.x - entity.x) * Math.cos(angle) + (crate.y - entity.y) * Math.sin(angle);
+      if (projection < 0 || projection > length) continue;
+      const perpendicular = Math.abs(
+        (crate.x - entity.x) * Math.sin(angle) - (crate.y - entity.y) * Math.cos(angle),
+      );
+      if (perpendicular <= superData.width / 2 + crate.radius) {
+        damageCrate(game, crate, superData.damage, entity);
+      }
     }
     return true;
   }
@@ -251,7 +286,7 @@ export function useSuper(game, entity, angle = entity.aim) {
     while (travelled < superData.distance) {
       const nextX = endX + dx;
       const nextY = endY + dy;
-      if (game.worldMap.collides(nextX, nextY, entity.radius)) break;
+      if (game.blocksMovement(nextX, nextY, entity.radius)) break;
       endX = nextX;
       endY = nextY;
       travelled += stepSize;
@@ -282,6 +317,15 @@ export function useSuper(game, entity, angle = entity.aim) {
         time: 0.2,
         maxTime: 0.2,
       };
+    }
+    for (const crate of game.crates) {
+      if (!crate.alive) continue;
+      if (
+        pointSegmentDistance(crate.x, crate.y, entity.x, entity.y, endX, endY) <
+        crate.radius + 30
+      ) {
+        damageCrate(game, crate, superData.damage * 1.25, entity);
+      }
     }
     entity.x = endX;
     entity.y = endY;
@@ -321,6 +365,10 @@ export function applyDamage(game, target, amount, source, options = {}) {
   target.hp = Math.max(0, target.hp - remaining);
   target.lastDamageAt = game.elapsed;
   target.flashUntil = game.elapsed + 0.12;
+  target.hitAnim = 1;
+  target.hitAngle = source
+    ? Math.atan2(target.y - source.y, target.x - source.x)
+    : target.aim;
   target.damageTaken = (target.damageTaken || 0) + remaining;
   if (target.inBush) target.hidden = false;
 
@@ -350,6 +398,7 @@ export function applyDamage(game, target, amount, source, options = {}) {
   });
   if (playerInvolved) {
     game.shake = Math.max(game.shake, options.beam ? 6 : 2.5);
+    if (!options.beam && target.hp > 0) game.hitStop = Math.max(game.hitStop || 0, 0.028);
     audio.play('hit');
   }
   if (target.hp <= 0) killEntity(game, target, source);
@@ -385,6 +434,15 @@ export function killEntity(game, entity, source) {
   entity.alive = false;
   entity.hp = 0;
   entity.respawnTimer = 3.3;
+  entity.deathTimer = entity.deathDuration || 0.72;
+  entity.deathAngle = entity.aim;
+  entity.animState = 'death';
+  entity.attackAnim = 0;
+  entity.hitAnim = 0;
+  entity.inputX = 0;
+  entity.inputY = 0;
+  entity.vx = 0;
+  entity.vy = 0;
   entity.deaths += 1;
   entity.shieldHp = 0;
   entity.knockback = null;

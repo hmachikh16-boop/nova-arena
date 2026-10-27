@@ -1,6 +1,7 @@
 import { WORLD } from '../data.js';
 import { clamp, distance, easeOutCubic, hexToRgba } from './utils.js';
 import { drawBrawler } from './sprites.js';
+import { drawCrate } from './props.js';
 
 function drawMine(ctx, game) {
   const { gemMine: mine, palette } = game.arena;
@@ -358,6 +359,24 @@ function drawEffects(ctx, game) {
       ctx.moveTo(effect.x, effect.y);
       ctx.lineTo(effect.x2, effect.y2);
       ctx.stroke();
+    } else if (effect.type === 'muzzle') {
+      ctx.translate(effect.x, effect.y);
+      ctx.rotate(effect.angle);
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = ratio * 0.95;
+      const size = effect.size * (0.65 + progress * 0.55);
+      ctx.fillStyle = effect.color;
+      ctx.beginPath();
+      ctx.moveTo(size, 0);
+      ctx.lineTo(-size * 0.3, size * 0.38);
+      ctx.lineTo(-size * 0.08, 0);
+      ctx.lineTo(-size * 0.3, -size * 0.38);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(0, 0, size * 0.32, 0, Math.PI * 2);
+      ctx.fill();
     }
     ctx.restore();
   }
@@ -467,6 +486,9 @@ export class ArenaRenderer {
     const shakeY = shake > 0 ? (Math.random() - 0.5) * shake : 0;
 
     ctx.save();
+    if (game.camera) {
+      game.camera.apply(ctx, WORLD.width, WORLD.height);
+    }
     ctx.translate(shakeX, shakeY);
     ctx.drawImage(game.worldMap.layer, 0, 0);
     drawOvertime(ctx, game);
@@ -474,10 +496,16 @@ export class ArenaRenderer {
     game.gems.forEach((gem, index) => drawGem(ctx, game, gem, index));
     drawAim(ctx, game);
 
-    const sorted = [...game.entities]
-      .filter((entity) => entity.alive)
-      .sort((a, b) => a.y - b.y || a.x - b.x);
-    for (const entity of sorted) drawBrawler(ctx, game, entity);
+    const drawables = [
+      ...game.entities
+        .filter((entity) => entity.alive || entity.deathTimer > 0)
+        .map((entity) => ({ kind: 'entity', y: entity.y, value: entity })),
+      ...game.crates.map((crate) => ({ kind: 'crate', y: crate.y, value: crate })),
+    ].sort((a, b) => a.y - b.y || a.value.x - b.value.x);
+    for (const drawable of drawables) {
+      if (drawable.kind === 'entity') drawBrawler(ctx, game, drawable.value);
+      else drawCrate(ctx, game, drawable.value);
+    }
 
     drawProjectiles(ctx, game);
     drawEffects(ctx, game);
